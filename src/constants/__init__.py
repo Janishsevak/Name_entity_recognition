@@ -10,8 +10,8 @@ MODELS_DIR = "models"
 BEST_MODEL_DIR = "best_model"
 
 # data ingestion 
-BUCKET_NAME = "ner-using-bert-24"
-GCP_DATA_FILE_NAME = "archive.zip"
+BUCKET_NAME = "ner_project2"
+GCP_DATA_FILE_NAME = "data.zip"
 CSV_DATA_FILE_NAME = "ner.csv"
 GCP_MODEL_NAME = "model.pt"
 
