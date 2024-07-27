@@ -1,27 +1,27 @@
 import sys
 from src.components.data_ingestion import DataIngestion
-# from src.components.data_transforamation import DataTransformation
-# from src.components.model_trainer import ModelTraining
-# from src.components.model_evaluation import ModelEvaluation
-# from src.components.model_pusher import ModelPusher
+from src.components.data_transforamation import DataTransformation
+from src.components.model_trainer import ModelTraining
+from src.components.model_evaluation import ModelEvaluation
+from src.components.model_pusher import ModelPusher
 from src.configuration.gcloud import GCloud
 from src.constants import *
 
 from src.entity.artifact_entity import (
     DataIngestionArtifacts,
-    # DataTransformationArtifacts,
-    # ModelTrainingArtifacts,
-    # ModelEvaluationArtifacts,
-    # ModelPusherArtifacts
+    DataTransformationArtifacts,
+    ModelTrainingArtifacts,
+    ModelEvaluationArtifacts,
+    ModelPusherArtifacts
     )
 
 
 from src.entity.config_entity import (
     DataIngestionConfig,
-    # DataTransformationConfig,
-    # ModelTrainingConfig,
-    # ModelEvalConfig,
-    # ModelPusherConfig
+    DataTransformationConfig,
+    ModelTrainingConfig,
+    ModelEvalConfig,
+    ModelPusherConfig
     
 )
 
@@ -33,11 +33,14 @@ from src.logger import logging
 class TrainPipeline:
     def __init__(self):
         self.data_ingestion_config = DataIngestionConfig()
-        # self.data_transformation_config = DataTransformationConfig()
-        # self.model_training_config = ModelTrainingConfig()
-        # self.model_evaluation_config = ModelEvalConfig()
-        # self.model_pusher_config = ModelPusherConfig()
+        self.data_transformation_config = DataTransformationConfig()
+        self.model_training_config = ModelTrainingConfig()
+        self.model_evaluation_config = ModelEvalConfig()
+        self.model_pusher_config = ModelPusherConfig()
         self.gcloud = GCloud()
+        self.model_training_artifact= ModelTrainingArtifacts(bert_model_path="F:/Name_entity_recognition/artifacts/07_23_2024_22_09_48/ModelTrainingArtifacts/model.pt",
+    tokenizer_file_path="F:/Name_entity_recognition/artifacts/07_23_2024_22_09_48/ModelTrainingArtifacts/tokenizer.pkl")
+
 
     
      # This method is used to start the data ingestion
@@ -61,31 +64,31 @@ class TrainPipeline:
 
 
     
-    #  # This method is used to start the data validation
-    # def start_data_transformation(
-    #     self, data_ingestion_artifact: DataIngestionArtifacts
-    # ) -> DataTransformationArtifacts:
-    #     logging.info(
-    #         "Entered the start_data_transformation method of TrainPipeline class"
-    #     )
-    #     try:
-    #         data_transformation = DataTransformation(
-    #             data_transformation_config=self.data_transformation_config,
-    #             data_ingestion_artifacts=data_ingestion_artifact,
-    #         )
+     # This method is used to start the data validation
+    def start_data_transformation(
+        self, data_ingestion_artifact: DataIngestionArtifacts
+    ) -> DataTransformationArtifacts:
+        logging.info(
+            "Entered the start_data_transformation method of TrainPipeline class"
+        )
+        try:
+            data_transformation = DataTransformation(
+                data_transformation_config=self.data_transformation_config,
+                data_ingestion_artifacts=data_ingestion_artifact,
+            )
 
-    #         data_transformation_artifact = (
-    #             data_transformation.initiate_data_transformation()
-    #         )
+            data_transformation_artifact = (
+                data_transformation.initiate_data_transformation()
+            )
 
-    #         logging.info("Performed the data validation operation")
-    #         logging.info(
-    #             "Exited the start_data_transformation method of TrainPipeline class"
-    #         )
-    #         return data_transformation_artifact
+            logging.info("Performed the data validation operation")
+            logging.info(
+                "Exited the start_data_transformation method of TrainPipeline class"
+            )
+            return data_transformation_artifact
 
-    #     except Exception as e:
-    #         raise NerException(e, sys) from e
+        except Exception as e:
+            raise NerException(e, sys) from e
         
 
     
@@ -113,55 +116,57 @@ class TrainPipeline:
 
     
 
-    #  # This method is used to start model evaluation
-    # def start_model_evaluation(
-    #     self,
-    #     data_transformation_artifact: DataTransformationArtifacts,
-    #     model_trainer_artifact: ModelTrainingArtifacts,
-    # ) -> ModelEvaluationArtifacts:
-    #     try:
-    #         logging.info(
-    #             "Entered the start_model_evaluation method of Train pipeline class"
-    #         )
-    #         model_evaluation = ModelEvaluation(
-    #             data_transformation_artifacts=data_transformation_artifact,
-    #             model_training_artifacts=model_trainer_artifact,
-    #             model_evaluation_config=self.model_evaluation_config,
-    #         )
+    # This method is used to start model evaluation
+    def start_model_evaluation(
+        self,
+        data_transformation_artifact: DataTransformationArtifacts,
+        model_trainer_artifact: ModelTrainingArtifacts,
+    ) -> ModelEvaluationArtifacts:
+        try:
+            logging.info(
+                "Entered the start_model_evaluation method of Train pipeline class"
+            )
+            model_evaluation = ModelEvaluation(
+                data_transformation_artifacts=data_transformation_artifact,
+                model_training_artifacts=model_trainer_artifact,
+                model_evaluation_config=self.model_evaluation_config,
+            )
 
-    #         model_evaluation_artifact = model_evaluation.initiate_model_evaluation()
+            model_evaluation_artifact = model_evaluation.initiate_model_evaluation()
 
-    #         logging.info(
-    #             "Exited the start_model_evaluation method of Train pipeline class"
-    #         )
-    #         return model_evaluation_artifact
+            logging.info(
+                "Exited the start_model_evaluation method of Train pipeline class"
+            )
+            return model_evaluation_artifact
 
-    #     except Exception as e:
-    #         raise NerException(e, sys) from e
+        except Exception as e:
+            raise NerException(e, sys) from e
         
 
     
 
+    
 
-    #  # This method is used to statr model pusher
-    # def start_model_pusher(
-    #     self, model_evaluation_artifact: ModelEvaluationArtifacts
-    # ) -> ModelPusherArtifacts:
-    #     try:
-    #         logging.info(
-    #             "Entered the start_model_pusher method of Train pipeline class"
-    #         )
-    #         model_pusher = ModelPusher(
-    #             model_evaluation_artifact=model_evaluation_artifact,
-    #             model_pusher_config=self.model_pusher_config,
-    #         )
-    #         model_pusher_artifact = model_pusher.initiate_model_pusher()
 
-    #         logging.info("Exited the start_model_pusher method of Train pipeline class")
-    #         return model_pusher_artifact
+     # This method is used to statr model pusher
+    def start_model_pusher(
+        self, model_evaluation_artifact: ModelEvaluationArtifacts
+    ) -> ModelPusherArtifacts:
+        try:
+            logging.info(
+                "Entered the start_model_pusher method of Train pipeline class"
+            )
+            model_pusher = ModelPusher(
+                model_evaluation_artifact=model_evaluation_artifact,
+                model_pusher_config=self.model_pusher_config,
+            )
+            model_pusher_artifact = model_pusher.initiate_model_pusher()
 
-    #     except Exception as e:
-    #         raise NerException(e, sys) from e
+            logging.info("Exited the start_model_pusher method of Train pipeline class")
+            return model_pusher_artifact
+
+        except Exception as e:
+            raise NerException(e, sys) from e
 
         
 
@@ -173,20 +178,21 @@ class TrainPipeline:
         try:
             logging.info("Started Model training >>>>>>>>>>>>>>>>>>>>>>>>>>>>>")
             data_ingestion_artifact = self.start_data_ingestion()
-            # data_transformation_artifacts = self.start_data_transformation(
-            #     data_ingestion_artifact=data_ingestion_artifact
-            # )
-            # # model_trainer_artifact = self.start_model_training(
+            data_transformation_artifacts = self.start_data_transformation(
+                data_ingestion_artifact=data_ingestion_artifact
+            )
+            # model_trainer_artifact = self.start_model_training(
             #     data_transformation_artifacts=data_transformation_artifacts
             # )
-            # model_evaluation_artifact = self.start_model_evaluation(
-            #     data_transformation_artifact=data_transformation_artifacts,
-            #     model_trainer_artifact=model_trainer_artifact,
-            # )
+            model_evaluation_artifact = self.start_model_evaluation(
+                data_transformation_artifact=data_transformation_artifacts,
+                model_trainer_artifact=self.model_training_artifact,
+            )
 
-            # model_pusher_artifact = self.start_model_pusher(
-            #     model_evaluation_artifact=model_evaluation_artifact
-            # )
+            model_pusher_artifact = self.start_model_pusher(
+                model_evaluation_artifact=model_evaluation_artifact
+            )
 
         except Exception as e:
             raise NerException(e, sys) from e
+
