@@ -45,4 +45,4 @@ async def predict_route(text: str):
 
 
 if __name__ == "__main__":
-    app_run(app, host=APP_HOST, port=APP_PORT)
+    app_run(app, host="0.0.0.0", port=8000)
